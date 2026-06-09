@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.pixelkurashi.repository.MoneyRecordRepository">
+    
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO money_record (record_date, amount, category, memo)
+        VALUES (#{recordDate}, #{amount}, #{category}, #{memo})
+    </insert>
+
+    <select id="findAll" resultType="com.example.pixelkurashi.entity.MoneyRecord">
+        SELECT * FROM money_record
+        ORDER BY record_date DESC
+    </select>
+    
+    <select id="findByMonth" resultType="com.example.pixelkurashi.entity.MoneyRecord">
+        SELECT * FROM money_record
+        WHERE YEAR(record_date) = #{year} AND MONTH(record_date) = #{month}
+        ORDER BY record_date DESC
+    </select>
+
+    <select id="findByDay" resultType="com.example.pixelkurashi.entity.MoneyRecord">
+        SELECT * FROM money_record
+        WHERE DATE(record_date) = #{date}
+        ORDER BY record_date DESC
+    </select>
+    
+</mapper>
