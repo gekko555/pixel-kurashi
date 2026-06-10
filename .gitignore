@@ -5,6 +5,7 @@ backend/mvnw
 backend/mvnw.cmd
 
 # Node
+node_modules/
 frontend/node_modules/
 frontend/dist/
 frontend/.vite/
@@ -35,3 +36,9 @@ __pycache__/
 # 設計書
 設計書/
 設計書諸々/
+
+# その他
+convert_excel_to_md.js
+convert_excel_to_md.py
+sql/
+
