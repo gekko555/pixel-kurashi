@@ -19,6 +19,21 @@ export function MoneyRecordList() {
         });
     },[]);
 
+    const handleDelete = (id: number) => {
+        fetch(`http://localhost:8080/api/money-records/${id}`, {
+            method: 'DELETE'
+        
+    })
+    .then(() => {
+        fetch('http://localhost:8080/api/money-records')
+        .then((response) => response.json())
+        .then((data) => setRecords(data));
+    })
+    .catch((err) => {
+        console.error('削除に失敗しました', err);
+    });
+};
+
     if(loading) return <div>読み込み中...</div>;
     if(error) return <div>{error}</div>;
     
@@ -29,6 +44,7 @@ export function MoneyRecordList() {
                 {records.map((record) => (
                     <li key = {record.id}>
                         {record.recordDate}: {record.amount}円 ({record.category}) - {record.memo}
+                        <button onClick={() => handleDelete(record.id)}>削除</button>
                     </li>
                 ))}
             </ul>

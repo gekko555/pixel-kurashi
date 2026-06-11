@@ -24,6 +24,10 @@ public interface MoneyRecordRepository {
 
     // 日ごとの支出と収入を取得
     List<MoneyRecord> findByDay(@Param("date")LocalDate date);
+
+    void deleteById(@Param("id")Long id);
+
+    
     
     
 }
