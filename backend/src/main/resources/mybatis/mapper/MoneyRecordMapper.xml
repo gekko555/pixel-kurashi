@@ -24,5 +24,9 @@
         WHERE DATE(record_date) = #{date}
         ORDER BY record_date DESC
     </select>
+
+    <delete id="deleteById">
+        DELETE FROM money_record WHERE id = #{id}
+    </delete>
     
 </mapper>

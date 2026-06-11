@@ -103,4 +103,8 @@ public List<MoneyRecordResponse> getAllRecords() {
         );
     }
 
+    public void deleteRecord(Long id) {
+        repository.deleteById(id);
+    }
+
 }
