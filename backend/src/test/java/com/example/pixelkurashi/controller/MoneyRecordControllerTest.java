@@ -1,6 +1,9 @@
 package com.example.pixelkurashi.controller;
 
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -82,5 +85,15 @@ public class MoneyRecordControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request)))
             .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void testDeleteRecord_Success() throws Exception {
+        Long testId = 1L;
+
+        mockMvc.perform(delete("/api/money-records/" + testId))
+            .andExpect(status().isOk());
+
+        verify(moneyRecordService, times(1)).deleteRecord(testId);
     }
 }

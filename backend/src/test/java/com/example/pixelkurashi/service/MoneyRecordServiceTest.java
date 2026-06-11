@@ -70,5 +70,14 @@ public class MoneyRecordServiceTest {
         assertEquals("食費", responses.get(0).getCategory());
     }
 
+    @Test
+    public void testDeleteRecord() throws Exception {
+        Long testId = 1L;
+
+        service.deleteRecord(testId);
+
+        verify(repository).deleteById(testId);
+    }
+
 
 }
