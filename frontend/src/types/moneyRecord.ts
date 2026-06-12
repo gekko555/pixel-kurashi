@@ -13,3 +13,10 @@ export interface MoneyRecordCreateRequest{
     category: string;
     memo: string;
 }
+export interface MoneyRecordUpdateRequest{
+    id: number;
+    recordDate: string;
+    amount: number;
+    category: string;
+    memo: string;
+}
