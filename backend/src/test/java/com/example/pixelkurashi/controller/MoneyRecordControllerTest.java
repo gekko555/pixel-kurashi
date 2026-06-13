@@ -1,11 +1,13 @@
 package com.example.pixelkurashi.controller;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
  
@@ -23,6 +25,7 @@ import org.springframework.http.MediaType;
  
 import com.example.pixelkurashi.dto.MoneyRecordCreateRequest;
 import com.example.pixelkurashi.dto.MoneyRecordResponse;
+import com.example.pixelkurashi.dto.MoneyRecordUpdateRequest;
 import com.example.pixelkurashi.service.MoneyRecordService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -56,6 +59,7 @@ public class MoneyRecordControllerTest {
             .andExpect(jsonPath("$[0].category").value("食費"));
     }
 
+    // 作成成功のテスト
      @Test
     public void testCreateRecord_Success() throws Exception {
         // テストデータの準備
@@ -72,6 +76,7 @@ public class MoneyRecordControllerTest {
             .andExpect(status().isOk());
     }
 
+    // 検証エラーのテスト
     @Test
     public void testCreateRecord_ValidationError_EmptyCategory() throws Exception {
         // テストデータの準備
@@ -87,6 +92,25 @@ public class MoneyRecordControllerTest {
             .andExpect(status().isBadRequest());
     }
 
+    // 更新成功のテスト
+    @Test
+    public void testUpdateRecord_Success() throws Exception {
+       MoneyRecordUpdateRequest request = new MoneyRecordUpdateRequest();
+       request.setId(1L);
+       request.setRecordDate(LocalDate.of(2026, 6, 1));
+       request.setAmount(2000);
+       request.setCategory("食費");
+       request.setMemo("夕食");
+
+       mockMvc.perform(put("/api/money-records/1")
+       .contentType(MediaType.APPLICATION_JSON)
+       .content(objectMapper.writeValueAsString(request)))
+       .andExpect(status().isOk());
+
+       verify(moneyRecordService, times(1)).updateById(any(MoneyRecordUpdateRequest.class));
+    }
+
+    // 削除成功のテスト
     @Test
     public void testDeleteRecord_Success() throws Exception {
         Long testId = 1L;

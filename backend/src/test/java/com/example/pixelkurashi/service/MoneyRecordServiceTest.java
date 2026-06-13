@@ -2,6 +2,7 @@ package com.example.pixelkurashi.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -18,18 +19,20 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.example.pixelkurashi.dto.MoneyRecordCreateRequest;
 import com.example.pixelkurashi.dto.MoneyRecordResponse;
+import com.example.pixelkurashi.dto.MoneyRecordUpdateRequest;
 import com.example.pixelkurashi.entity.MoneyRecord;
 import com.example.pixelkurashi.repository.MoneyRecordRepository;
 
 @ExtendWith(MockitoExtension.class)
 public class MoneyRecordServiceTest {
-    
+
     @Mock
     private MoneyRecordRepository repository;
 
     @InjectMocks
     private MoneyRecordService service;
 
+    // 作成成功のテスト
     @Test
     public void testCreateRecord() {
         // テストデータの準備
@@ -38,14 +41,15 @@ public class MoneyRecordServiceTest {
         request.setAmount(1000);
         request.setCategory("食費");
         request.setMemo("ランチ");
- 
+
         // 登録処理のテスト
         service.createRecord(request);
- 
+
         // repository.insert()が呼ばれたことを確認
         verify(repository).insert(any(MoneyRecord.class));
     }
 
+    // 全件取得のテスト
     @Test
     public void testGetAllRecords() {
         // テストデータの準備
@@ -57,12 +61,12 @@ public class MoneyRecordServiceTest {
         entity.setMemo("ランチ");
         entity.setCreatedAt(LocalDateTime.now());
         entity.setUpdatedAt(LocalDateTime.now());
- 
+
         when(repository.findAll()).thenReturn(Arrays.asList(entity));
- 
+
         // 全件取得のテスト
         List<MoneyRecordResponse> responses = service.getAllRecords();
- 
+
         // 結果の確認
         assertEquals(1, responses.size());
         assertEquals(1L, responses.get(0).getId());
@@ -70,6 +74,7 @@ public class MoneyRecordServiceTest {
         assertEquals("食費", responses.get(0).getCategory());
     }
 
+    // 削除成功のテスト
     @Test
     public void testDeleteRecord() throws Exception {
         Long testId = 1L;
@@ -79,5 +84,25 @@ public class MoneyRecordServiceTest {
         verify(repository).deleteById(testId);
     }
 
+    // 更新成功のテスト
+    @Test
+    public void testUpdateRecord() {
+        // テストデータの準備
+        MoneyRecordUpdateRequest request = new MoneyRecordUpdateRequest();
+        request.setId(1L);
+        request.setRecordDate(LocalDate.of(2026, 6, 1));
+        request.setAmount(1000);
+        request.setCategory("食費");
+        request.setMemo("ランチ");
+
+        // repositoryのモック設定（voidメソッドなので何も返さない）
+        doNothing().when(repository).updateById(any(MoneyRecord.class));
+
+        // 更新処理のテスト
+        service.updateById(request);
+
+        // repositoryメソッドが呼ばれたことを検証
+        verify(repository).updateById(any(MoneyRecord.class));
+    }
 
 }
