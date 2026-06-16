@@ -16,8 +16,8 @@ public class MoneyRecordCreateRequest {
     private Integer amount;
 
     //カテゴリ
-    @NotBlank(message = "カテゴリは必須です")
-    private String category;
+    @NotNull(message = "カテゴリは必須です")
+    private Long categoryId;
 
     //メモ
     private String memo;
@@ -38,12 +38,12 @@ public class MoneyRecordCreateRequest {
         this.amount = amount;
     }
 
-    public String getCategory(){
-        return category;
+    public Long getCategoryId(){
+        return categoryId;
     }
 
-    public void setCategory(String category){
-        this.category = category;
+    public void setCategoryId(Long categoryId){
+        this.categoryId = categoryId;
     }
 
     public String getMemo(){

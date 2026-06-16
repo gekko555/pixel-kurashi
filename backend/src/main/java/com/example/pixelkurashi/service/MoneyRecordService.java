@@ -16,8 +16,11 @@ public class MoneyRecordService {
 
     private final MoneyRecordRepository repository;
 
-    public MoneyRecordService(MoneyRecordRepository repository) {
+    private final CategoryMasterService categoryMasterService;
+
+    public MoneyRecordService(MoneyRecordRepository repository, CategoryMasterService categoryMasterService) {
         this.repository = repository;
+        this.categoryMasterService = categoryMasterService;
     }
 
     /**
@@ -36,12 +39,7 @@ public class MoneyRecordService {
      * @return 家計簿記録のリスト
      */
     public List<MoneyRecordResponse> getAllRecords() {
-        List<MoneyRecord> records = repository.findAll();
-        List<MoneyRecordResponse> responses = new ArrayList<>();
-        for (MoneyRecord record : records) {
-            responses.add(toResponse(record));
-        }
-        return responses;
+        return repository.findAll();
     }
 
     /**
@@ -63,12 +61,7 @@ public class MoneyRecordService {
      * @return 家計簿記録のリスト
      */
     public List<MoneyRecordResponse> getRecordsByMonth(int year, int month) {
-        List<MoneyRecord> records = repository.findByMonth(year, month);
-        List<MoneyRecordResponse> responses = new ArrayList<>();
-        for (MoneyRecord record : records) {
-            responses.add(toResponse(record));
-        }
-        return responses;
+        return repository.findByMonth(year, month);
     }
 
     /**
@@ -78,12 +71,7 @@ public class MoneyRecordService {
      * @return 家計簿記録のリスト
      */
     public List<MoneyRecordResponse> getRecordsByDay(LocalDate date) {
-        List<MoneyRecord> records = repository.findByDay(date);
-        List<MoneyRecordResponse> responses = new ArrayList<>();
-        for (MoneyRecord record : records) {
-            responses.add(toResponse(record));
-        }
-        return responses;
+        return repository.findByDay(date);
     }
 
     /**
@@ -104,7 +92,7 @@ public class MoneyRecordService {
         MoneyRecord entity = new MoneyRecord();
         entity.setRecordDate(request.getRecordDate());
         entity.setAmount(request.getAmount());
-        entity.setCategory(request.getCategory());
+        entity.setCategoryId(request.getCategoryId());
         entity.setMemo(request.getMemo());
         return entity;
     }
@@ -120,7 +108,8 @@ public class MoneyRecordService {
                 entity.getId(),
                 entity.getRecordDate(),
                 entity.getAmount(),
-                entity.getCategory(),
+                entity.getCategoryId(),
+                null,
                 entity.getMemo(),
                 entity.getCreatedAt(),
                 entity.getUpdatedAt());
@@ -137,7 +126,7 @@ public class MoneyRecordService {
         entity.setId(request.getId());
         entity.setRecordDate(request.getRecordDate());
         entity.setAmount(request.getAmount());
-        entity.setCategory(request.getCategory());
+        entity.setCategoryId(request.getCategoryId());
         entity.setMemo(request.getMemo());
         return entity;
     }

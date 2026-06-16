@@ -12,7 +12,9 @@ public class MoneyRecordResponse {
     //金額
     private Integer amount;
     //カテゴリ
-    private String category;
+    private Long categoryId;
+    //カテゴリ名
+    private String categoryName;
     //メモ
     private String memo;
     //作成日時
@@ -20,11 +22,12 @@ public class MoneyRecordResponse {
     //更新日時
     private LocalDateTime updatedAt;
 
-    public MoneyRecordResponse(Long id, LocalDate recordDate, Integer amount, String category, String memo, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public MoneyRecordResponse(Long id, LocalDate recordDate, Integer amount, Long categoryId, String categoryName, String memo, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.recordDate = recordDate;
         this.amount = amount;
-        this.category = category;
+        this.categoryId = categoryId;
+        this.categoryName = categoryName;
         this.memo = memo;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -44,8 +47,12 @@ public class MoneyRecordResponse {
     }
 
 
-    public String getCategory() {
-        return category;
+    public Long getCategoryId() {
+        return categoryId;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
     }
 
     public String getMemo() {

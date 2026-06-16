@@ -40,5 +40,5 @@ __pycache__/
 # その他
 convert_excel_to_md.js
 convert_excel_to_md.py
-sql/
+# sql/
 

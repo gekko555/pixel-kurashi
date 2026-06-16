@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MoneyRecordCreateRequest } from '../types/moneyRecord';
+import { CategoryMasterResponse } from '../types/moneyRecord';
 
 export function MoneyRecordForm() {
     const [formData, setFormData] = useState<MoneyRecordCreateRequest>({
         recordDate: '',
         amount: 0,
-        category: '',
+        categoryId: 0,
         memo: ''
     });
 
@@ -21,7 +22,7 @@ export function MoneyRecordForm() {
         .then((response) => {
             if (response.ok) {
                 alert('家計簿の登録が完了しました');
-                setFormData({ recordDate: '', amount: 0, category: '', memo: '' });
+                setFormData({ recordDate: '', amount: 0, categoryId: 0, memo: '' });
                 window.location.reload();
             } else {
                 alert('家計簿の登録に失敗しました');
@@ -31,6 +32,14 @@ export function MoneyRecordForm() {
             alert('エラーが発生しました');
         });
     };
+
+    const [categories, setCategories ] = useState<CategoryMasterResponse[]>([]);
+
+    useEffect(() => {
+        fetch('http://localhost:8080/api/categories')
+            .then(response => response.json())
+            .then(data => setCategories(data));
+    }, []);
 
     return (
         <form onSubmit={handleSubmit}>
@@ -52,11 +61,17 @@ export function MoneyRecordForm() {
                 </div>
                 <div>
         <label>カテゴリ:</label>
-        <input
-          type="text"
-          value={formData.category}
-          onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-        />
+        <select
+          value={formData.categoryId}
+          onChange={(e) => setFormData({ ...formData, categoryId: Number(e.target.value) })}
+        >
+            <option value = "">カテゴリを選択してください</option>
+            {categories.map(category => (
+                <option key = {category.id} value = {category.id}>
+                    {category.name}
+                </option>
+            ))}
+        </select>
       </div>
       <div>
         <label>メモ:</label>

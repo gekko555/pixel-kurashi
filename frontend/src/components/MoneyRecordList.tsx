@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { MoneyRecordResponse } from '../types/moneyRecord';
 import { MoneyRecordUpdateRequest } from '../types/moneyRecord';
+import { CategoryMasterResponse } from '../types/moneyRecord';
 
 export function MoneyRecordList() {
     const [records, setRecords] = useState<MoneyRecordResponse[]>([]);
@@ -21,12 +22,20 @@ export function MoneyRecordList() {
         });
     },[]);
 
+    const [categories, setCategories] = useState<CategoryMasterResponse[]>([]);
+
+    useEffect(() => {
+        fetch('http://localhost:8080/api/categories')
+        .then(response => response.json())
+        .then(data => setCategories(data));
+    }, []);
+
     const updateRecord = (record: MoneyRecordResponse) => {
         setEditFormData({
             id: record.id,
             recordDate: record.recordDate,
             amount: record.amount,
-            category: record.category,
+            categoryId: record.categoryId,
             memo: record.memo
         });
     };
@@ -73,7 +82,7 @@ export function MoneyRecordList() {
             <ul>
                 {records.map((record) => (
                     <li key = {record.id}>
-                        {record.recordDate}: {record.amount}円 ({record.category}) - {record.memo}
+                        {record.recordDate}: {record.amount}円 ({record.categoryName}) - {record.memo}
                         <button onClick={() => updateRecord(record)}>更新</button>
                         <button onClick={() => handleDelete(record.id)}>削除</button>
                     </li>
@@ -92,11 +101,17 @@ export function MoneyRecordList() {
                         value={editFormData.amount}
                         onChange={(e) => setEditFormData({...editFormData, amount: Number(e.target.value)})}
                     />
-                    <input 
-                        type="text" 
-                        value={editFormData.category}
-                        onChange={(e) => setEditFormData({...editFormData, category: e.target.value})}
-                    />
+                    <select
+    value={editFormData.categoryId}
+    onChange={(e) => setEditFormData({ ...editFormData, categoryId: Number(e.target.value) })}
+>
+    <option value="">カテゴリを選択してください</option>
+    {categories.map(category => (
+        <option key={category.id} value={category.id}>
+            {category.name}
+        </option>
+    ))}
+</select>
                     <input 
                         type="text" 
                         value={editFormData.memo}
