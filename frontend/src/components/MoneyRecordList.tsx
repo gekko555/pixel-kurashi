@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { MoneyRecordResponse } from '../types/moneyRecord';
 import { MoneyRecordUpdateRequest } from '../types/moneyRecord';
 import { CategoryMasterResponse } from '../types/moneyRecord';
+import { fetchMoneyRecords, updateMoneyRecord, deleteMoneyRecord, fetchCategories } from '../api/moneyRecords';
 
 export function MoneyRecordList() {
     const [records, setRecords] = useState<MoneyRecordResponse[]>([]);
@@ -10,27 +11,28 @@ export function MoneyRecordList() {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        fetch('http://localhost:8080/api/money-records')
-        .then((response) => response.json())
-        .then((data) => {
-            setRecords(data);
-            setLoading(false);
-        })
-        .catch((err) => {
-            setError('収支記録の取得に失敗しました');
-            setLoading(false);
-        });
-    },[]);
+        const loadRecords = async () => {
+            try {
+                const data = await fetchMoneyRecords();
+                setRecords(data);
+                setLoading(false);
+            } catch (err) {
+                setError('収支記録の取得に失敗しました');
+                setLoading(false);
+            }
+        };
+        loadRecords();
+    }, []);
+
+
 
     const [categories, setCategories] = useState<CategoryMasterResponse[]>([]);
 
     useEffect(() => {
-        fetch('http://localhost:8080/api/categories')
-        .then(response => response.json())
-        .then(data => setCategories(data));
+         fetchCategories().then(data => setCategories(data));
     }, []);
 
-    const updateRecord = (record: MoneyRecordResponse) => {
+       const updateRecord = (record: MoneyRecordResponse) => {
         setEditFormData({
             id: record.id,
             recordDate: record.recordDate,
@@ -40,38 +42,30 @@ export function MoneyRecordList() {
         });
     };
 
-    const handleUpdate = () => {
+    const handleUpdate = async () => {
         if (editFormData) {
-            fetch(`http://localhost:8080/api/money-records/${editFormData.id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(editFormData)
-            })
-            .then(() => {
+            try {
+                await updateMoneyRecord(editFormData.id, editFormData);
                 setEditFormData(null);
-                fetch('http://localhost:8080/api/money-records')
-                .then((response) => response.json())
-                .then((data) => setRecords(data));
-            })
-            .catch((err) => {
+                const data = await fetchMoneyRecords();
+                setRecords(data);
+            } catch (err) {
                 console.error('更新に失敗しました', err);
-            });
+            }
         }
     };
 
-    const handleDelete = (id: number) => {
-        fetch(`http://localhost:8080/api/money-records/${id}`, {
-            method: 'DELETE'
-    })
-    .then(() => {
-        fetch('http://localhost:8080/api/money-records')
-        .then((response) => response.json())
-        .then((data) => setRecords(data));
-    })
-    .catch((err) => {
-        console.error('削除に失敗しました', err);
-    });
-};
+
+
+    const handleDelete = async (id: number) => {
+        try {
+            await deleteMoneyRecord(id);
+            const data = await fetchMoneyRecords();
+            setRecords(data);
+        } catch (err) {
+            console.error('削除に失敗しました', err);
+        }
+    };
 
     if(loading) return <div>読み込み中...</div>;
     if(error) return <div>{error}</div>;

@@ -8,37 +8,37 @@
         #{memo})
     </insert>
 
-    <select id="findByMonth" resultMap="MoneyRecordResponseMap">
-    SELECT 
-        mr.id,
-        mr.record_date,
-        mr.amount,
-        mr.category_id,
-        mr.memo,
-        mr.created_at,
-        mr.updated_at,
-        cm.name as category_name
-    FROM money_record mr
-    LEFT JOIN category_master cm ON mr.category_id = cm.id
-    WHERE YEAR(record_date) = #{year} AND MONTH(record_date) = #{month}
-    ORDER BY record_date DESC
-</select>
- 
-<select id="findByDay" resultMap="MoneyRecordResponseMap">
-    SELECT 
-        mr.id,
-        mr.record_date,
-        mr.amount,
-        mr.category_id,
-        mr.memo,
-        mr.created_at,
-        mr.updated_at,
-        cm.name as category_name
-    FROM money_record mr
-    LEFT JOIN category_master cm ON mr.category_id = cm.id
-    WHERE DATE(record_date) = #{date}
-    ORDER BY record_date DESC
-</select>
+    <select id="findByMonth" resultMap="MoneyRecordWithCategoryMap">
+        SELECT
+            mr.id,
+            mr.record_date,
+            mr.amount,
+            mr.category_id,
+            mr.memo,
+            mr.created_at,
+            mr.updated_at,
+            cm.name as category_name
+        FROM money_record mr
+        LEFT JOIN category_master cm ON mr.category_id = cm.id
+        WHERE record_date >= #{startDate} AND record_date &lt; #{endDate}
+        ORDER BY record_date DESC
+    </select>
+
+    <select id="findByDay" resultMap="MoneyRecordWithCategoryMap">
+        SELECT
+            mr.id,
+            mr.record_date,
+            mr.amount,
+            mr.category_id,
+            mr.memo,
+            mr.created_at,
+            mr.updated_at,
+            cm.name as category_name
+        FROM money_record mr
+        LEFT JOIN category_master cm ON mr.category_id = cm.id
+        WHERE DATE(record_date) = #{date}
+        ORDER BY record_date DESC
+    </select>
 
     <delete id="deleteById"> DELETE FROM money_record WHERE id = #{id} </delete>
 
@@ -48,32 +48,32 @@
         WHERE id = #{id} 
     </update>
 
-    <resultMap id="MoneyRecordResponseMap" type="com.example.pixelkurashi.dto.MoneyRecordResponse">
-    <constructor>
-        <idArg column="id" javaType="java.lang.Long"/>
-        <arg column="record_date" javaType="java.time.LocalDate"/>
-        <arg column="amount" javaType="java.lang.Integer"/>
-        <arg column="category_id" javaType="java.lang.Long"/>
-        <arg column="category_name" javaType="java.lang.String"/>
-        <arg column="memo" javaType="java.lang.String"/>
-        <arg column="created_at" javaType="java.time.LocalDateTime"/>
-        <arg column="updated_at" javaType="java.time.LocalDateTime"/>
-    </constructor>
-</resultMap>
+    <resultMap id="MoneyRecordWithCategoryMap" type="com.example.pixelkurashi.dto.MoneyRecordWithCategory">
+        <constructor>
+            <idArg column="id" javaType="java.lang.Long"/>
+            <arg column="record_date" javaType="java.time.LocalDate"/>
+            <arg column="amount" javaType="java.lang.Integer"/>
+            <arg column="category_id" javaType="java.lang.Long"/>
+            <arg column="category_name" javaType="java.lang.String"/>
+            <arg column="memo" javaType="java.lang.String"/>
+            <arg column="created_at" javaType="java.time.LocalDateTime"/>
+            <arg column="updated_at" javaType="java.time.LocalDateTime"/>
+        </constructor>
+    </resultMap>
 
-    <select id="findAll" resultMap="MoneyRecordResponseMap">
-    SELECT 
-        mr.id,
-        mr.record_date,
-        mr.amount,
-        mr.category_id,
-        mr.memo,
-        mr.created_at,
-        mr.updated_at,
-        cm.name as category_name
-    FROM money_record mr
-    LEFT JOIN category_master cm ON mr.category_id = cm.id
-    ORDER BY mr.id
+    <select id="findAll" resultMap="MoneyRecordWithCategoryMap">
+        SELECT
+            mr.id,
+            mr.record_date,
+            mr.amount,
+            mr.category_id,
+            mr.memo,
+            mr.created_at,
+            mr.updated_at,
+            cm.name as category_name
+        FROM money_record mr
+        LEFT JOIN category_master cm ON mr.category_id = cm.id
+        ORDER BY mr.id
     </select>
 
 </mapper>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { MoneyRecordCreateRequest } from '../types/moneyRecord';
 import { CategoryMasterResponse } from '../types/moneyRecord';
+import { createMoneyRecord, fetchCategories } from '../api/moneyRecords';
 
 export function MoneyRecordForm() {
     const [formData, setFormData] = useState<MoneyRecordCreateRequest>({
@@ -10,35 +11,22 @@ export function MoneyRecordForm() {
         memo: ''
     });
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        fetch('http://localhost:8080/api/money-records', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body:JSON.stringify(formData)
-        })
-        .then((response) => {
-            if (response.ok) {
-                alert('家計簿の登録が完了しました');
-                setFormData({ recordDate: '', amount: 0, categoryId: 0, memo: '' });
-                window.location.reload();
-            } else {
-                alert('家計簿の登録に失敗しました');
-            }
-        })
-        .catch((err) => {
-            alert('エラーが発生しました');
-        });
+         try {
+            await createMoneyRecord(formData);
+            alert('家計簿の登録が完了しました');
+            setFormData({ recordDate: '', amount: 0, categoryId: 0, memo: '' });
+            window.location.reload();
+        } catch (err) {
+            alert('家計簿の登録に失敗しました');
+        }
     };
 
     const [categories, setCategories ] = useState<CategoryMasterResponse[]>([]);
 
     useEffect(() => {
-        fetch('http://localhost:8080/api/categories')
-            .then(response => response.json())
-            .then(data => setCategories(data));
+        fetchCategories().then(data => setCategories(data));
     }, []);
 
     return (
