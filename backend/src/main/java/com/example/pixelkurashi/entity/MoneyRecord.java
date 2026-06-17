@@ -14,7 +14,7 @@ public class MoneyRecord {
     private Integer amount;
 
     //カテゴリ
-    private String category;
+    private Long categoryId;
 
     //メモ
     private String memo;
@@ -29,14 +29,15 @@ public class MoneyRecord {
     public MoneyRecord() {}
 
     //引数付きコンストラクタ
-    public MoneyRecord(Long id, LocalDate recordDate, Integer amount, String category, String memo) {
+    public MoneyRecord(Long id, LocalDate recordDate, Integer amount, Long categoryId, String memo) {
         this.id = id;
         this.recordDate = recordDate;
         this.amount = amount;
-        this.category = category;
+        this.categoryId = categoryId;
         this.memo = memo;
     }
 
+    //アクセサ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
     public Long getId(){
         return id;
     }
@@ -61,12 +62,12 @@ public class MoneyRecord {
         this.amount = amount;
     }
 
-    public String getCategory(){
-        return category;
+    public Long getCategoryId(){
+        return categoryId;
     }
 
-    public void setCategory(String category){
-        this.category = category;
+    public void setCategoryId(Long categoryId){
+        this.categoryId = categoryId;
     }
 
     public String getMemo(){

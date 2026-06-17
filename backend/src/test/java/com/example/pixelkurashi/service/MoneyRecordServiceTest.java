@@ -39,7 +39,7 @@ public class MoneyRecordServiceTest {
         MoneyRecordCreateRequest request = new MoneyRecordCreateRequest();
         request.setRecordDate(LocalDate.of(2026, 6, 1));
         request.setAmount(1000);
-        request.setCategory("食費");
+        request.setCategoryId(1L);
         request.setMemo("ランチ");
 
         // 登録処理のテスト
@@ -53,16 +53,18 @@ public class MoneyRecordServiceTest {
     @Test
     public void testGetAllRecords() {
         // テストデータの準備
-        MoneyRecord entity = new MoneyRecord();
-        entity.setId(1L);
-        entity.setRecordDate(LocalDate.of(2026, 6, 1));
-        entity.setAmount(1000);
-        entity.setCategory("食費");
-        entity.setMemo("ランチ");
-        entity.setCreatedAt(LocalDateTime.now());
-        entity.setUpdatedAt(LocalDateTime.now());
+        MoneyRecordResponse response = new MoneyRecordResponse(
+        1L, 
+        LocalDate.of(2026, 6, 1), 
+        1000, 
+        1L, 
+        "食費", 
+        "ランチ", 
+        LocalDateTime.now(), 
+        LocalDateTime.now()
+    );
 
-        when(repository.findAll()).thenReturn(Arrays.asList(entity));
+        when(repository.findAll()).thenReturn(Arrays.asList(response));
 
         // 全件取得のテスト
         List<MoneyRecordResponse> responses = service.getAllRecords();
@@ -71,7 +73,8 @@ public class MoneyRecordServiceTest {
         assertEquals(1, responses.size());
         assertEquals(1L, responses.get(0).getId());
         assertEquals(1000, responses.get(0).getAmount());
-        assertEquals("食費", responses.get(0).getCategory());
+        assertEquals(1L, responses.get(0).getCategoryId());
+        assertEquals("食費", responses.get(0).getCategoryName());
     }
 
     // 削除成功のテスト
@@ -92,7 +95,7 @@ public class MoneyRecordServiceTest {
         request.setId(1L);
         request.setRecordDate(LocalDate.of(2026, 6, 1));
         request.setAmount(1000);
-        request.setCategory("食費");
+        request.setCategoryId(1L);
         request.setMemo("ランチ");
 
         // repositoryのモック設定（voidメソッドなので何も返さない）

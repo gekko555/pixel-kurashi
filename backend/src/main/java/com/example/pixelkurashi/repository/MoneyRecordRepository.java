@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import com.example.pixelkurashi.dto.MoneyRecordWithCategory;
 import com.example.pixelkurashi.entity.MoneyRecord;
 
 @Mapper
@@ -17,19 +18,21 @@ public interface MoneyRecordRepository {
     void insert(MoneyRecord moneyRecord);
 
     // すべての支出と収入を取得
-    List<MoneyRecord> findAll();
+    List<MoneyRecordWithCategory> findAll();
 
     // 月ごとの支出と収入を取得
-    List<MoneyRecord> findByMonth(@Param("year")int year, @Param("month") int month);
+    List<MoneyRecordWithCategory> findByMonth(@Param("startDate")LocalDate startDate, @Param("endDate") LocalDate endDate);
 
     // 日ごとの支出と収入を取得
-    List<MoneyRecord> findByDay(@Param("date")LocalDate date);
+    List<MoneyRecordWithCategory> findByDay(@Param("date")LocalDate date);
 
     // IDで支出と収入を削除
     void deleteById(@Param("id")Long id);
 
     // IDで支出と収入を更新
     void updateById(MoneyRecord moneyRecord);
+
+
 
     
     

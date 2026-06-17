@@ -3,26 +3,32 @@ package com.example.pixelkurashi.dto;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-
-public class MoneyRecordResponse {
-    //ID
+public class MoneyRecordWithCategory {
+    // レコードID
     private Long id;
-    //記録日
+
+    // 記録日
     private LocalDate recordDate;
-    //金額
+
+    // 金額
     private Integer amount;
-    //カテゴリ
+    
+    // カテゴリID
     private Long categoryId;
-    //カテゴリ名
+
+    // カテゴリ名
     private String categoryName;
-    //メモ
+
+    // 備考
     private String memo;
-    //作成日時
+    
+    // 作成日時
     private LocalDateTime createdAt;
-    //更新日時
+    
+    // 更新日時
     private LocalDateTime updatedAt;
 
-    public MoneyRecordResponse(Long id, LocalDate recordDate, Integer amount, Long categoryId, String categoryName, String memo, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public MoneyRecordWithCategory(Long id, LocalDate recordDate, Integer amount, Long categoryId, String categoryName, String memo, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.recordDate = recordDate;
         this.amount = amount;
@@ -33,6 +39,7 @@ public class MoneyRecordResponse {
         this.updatedAt = updatedAt;
     }
 
+    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -41,11 +48,9 @@ public class MoneyRecordResponse {
         return recordDate;
     }
 
-
     public Integer getAmount() {
         return amount;
     }
-
 
     public Long getCategoryId() {
         return categoryId;
@@ -66,6 +71,4 @@ public class MoneyRecordResponse {
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
-
-
 }

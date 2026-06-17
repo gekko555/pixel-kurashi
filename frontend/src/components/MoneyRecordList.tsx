@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { MoneyRecordResponse } from '../types/moneyRecord';
 import { MoneyRecordUpdateRequest } from '../types/moneyRecord';
+import { CategoryMasterResponse } from '../types/moneyRecord';
+import { fetchMoneyRecords, updateMoneyRecord, deleteMoneyRecord, fetchCategories } from '../api/moneyRecords';
 
 export function MoneyRecordList() {
     const [records, setRecords] = useState<MoneyRecordResponse[]>([]);
@@ -9,60 +11,61 @@ export function MoneyRecordList() {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        fetch('http://localhost:8080/api/money-records')
-        .then((response) => response.json())
-        .then((data) => {
-            setRecords(data);
-            setLoading(false);
-        })
-        .catch((err) => {
-            setError('収支記録の取得に失敗しました');
-            setLoading(false);
-        });
-    },[]);
+        const loadRecords = async () => {
+            try {
+                const data = await fetchMoneyRecords();
+                setRecords(data);
+                setLoading(false);
+            } catch (err) {
+                setError('収支記録の取得に失敗しました');
+                setLoading(false);
+            }
+        };
+        loadRecords();
+    }, []);
 
-    const updateRecord = (record: MoneyRecordResponse) => {
+
+
+    const [categories, setCategories] = useState<CategoryMasterResponse[]>([]);
+
+    useEffect(() => {
+         fetchCategories().then(data => setCategories(data));
+    }, []);
+
+       const updateRecord = (record: MoneyRecordResponse) => {
         setEditFormData({
             id: record.id,
             recordDate: record.recordDate,
             amount: record.amount,
-            category: record.category,
+            categoryId: record.categoryId,
             memo: record.memo
         });
     };
 
-    const handleUpdate = () => {
+    const handleUpdate = async () => {
         if (editFormData) {
-            fetch(`http://localhost:8080/api/money-records/${editFormData.id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(editFormData)
-            })
-            .then(() => {
+            try {
+                await updateMoneyRecord(editFormData.id, editFormData);
                 setEditFormData(null);
-                fetch('http://localhost:8080/api/money-records')
-                .then((response) => response.json())
-                .then((data) => setRecords(data));
-            })
-            .catch((err) => {
+                const data = await fetchMoneyRecords();
+                setRecords(data);
+            } catch (err) {
                 console.error('更新に失敗しました', err);
-            });
+            }
         }
     };
 
-    const handleDelete = (id: number) => {
-        fetch(`http://localhost:8080/api/money-records/${id}`, {
-            method: 'DELETE'
-    })
-    .then(() => {
-        fetch('http://localhost:8080/api/money-records')
-        .then((response) => response.json())
-        .then((data) => setRecords(data));
-    })
-    .catch((err) => {
-        console.error('削除に失敗しました', err);
-    });
-};
+
+
+    const handleDelete = async (id: number) => {
+        try {
+            await deleteMoneyRecord(id);
+            const data = await fetchMoneyRecords();
+            setRecords(data);
+        } catch (err) {
+            console.error('削除に失敗しました', err);
+        }
+    };
 
     if(loading) return <div>読み込み中...</div>;
     if(error) return <div>{error}</div>;
@@ -73,7 +76,7 @@ export function MoneyRecordList() {
             <ul>
                 {records.map((record) => (
                     <li key = {record.id}>
-                        {record.recordDate}: {record.amount}円 ({record.category}) - {record.memo}
+                        {record.recordDate}: {record.amount}円 ({record.categoryName}) - {record.memo}
                         <button onClick={() => updateRecord(record)}>更新</button>
                         <button onClick={() => handleDelete(record.id)}>削除</button>
                     </li>
@@ -92,11 +95,17 @@ export function MoneyRecordList() {
                         value={editFormData.amount}
                         onChange={(e) => setEditFormData({...editFormData, amount: Number(e.target.value)})}
                     />
-                    <input 
-                        type="text" 
-                        value={editFormData.category}
-                        onChange={(e) => setEditFormData({...editFormData, category: e.target.value})}
-                    />
+                    <select
+    value={editFormData.categoryId}
+    onChange={(e) => setEditFormData({ ...editFormData, categoryId: Number(e.target.value) })}
+>
+    <option value="">カテゴリを選択してください</option>
+    {categories.map(category => (
+        <option key={category.id} value={category.id}>
+            {category.name}
+        </option>
+    ))}
+</select>
                     <input 
                         type="text" 
                         value={editFormData.memo}

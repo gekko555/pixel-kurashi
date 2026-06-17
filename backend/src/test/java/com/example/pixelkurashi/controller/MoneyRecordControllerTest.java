@@ -27,6 +27,7 @@ import com.example.pixelkurashi.dto.MoneyRecordCreateRequest;
 import com.example.pixelkurashi.dto.MoneyRecordResponse;
 import com.example.pixelkurashi.dto.MoneyRecordUpdateRequest;
 import com.example.pixelkurashi.service.MoneyRecordService;
+import com.example.pixelkurashi.service.CategoryMasterService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @WebMvcTest(MoneyRecordController.class)
@@ -38,6 +39,9 @@ public class MoneyRecordControllerTest {
     @MockBean
     private MoneyRecordService moneyRecordService;
 
+    @MockBean
+    private CategoryMasterService categoryMasterService;
+
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -45,7 +49,7 @@ public class MoneyRecordControllerTest {
     public void testGetAllRecords() throws Exception {
         //テストデータの準備
         List<MoneyRecordResponse> mockRecords = Arrays.asList(
-            new MoneyRecordResponse(1L, LocalDate.of(2026, 6, 1), 1000, "食費", "ランチ", LocalDateTime.now(), LocalDateTime.now())
+            new MoneyRecordResponse(1L, LocalDate.of(2026, 6, 1), 1000, 1L, "食費", "ランチ", LocalDateTime.now(), LocalDateTime.now())
         );
 
         //serviceのモック設定
@@ -56,7 +60,8 @@ public class MoneyRecordControllerTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].id").value(1))
             .andExpect(jsonPath("$[0].amount").value(1000))
-            .andExpect(jsonPath("$[0].category").value("食費"));
+            .andExpect(jsonPath("$[0].categoryId").value(1))
+            .andExpect(jsonPath("$[0].categoryName").value("食費"));
     }
 
     // 作成成功のテスト
@@ -66,7 +71,7 @@ public class MoneyRecordControllerTest {
         MoneyRecordCreateRequest request = new MoneyRecordCreateRequest();
         request.setRecordDate(LocalDate.of(2026, 6, 1));
         request.setAmount(1000);
-        request.setCategory("食費");
+        request.setCategoryId(1L);
         request.setMemo("ランチ");
  
         // POSTリクエストのテスト
@@ -83,7 +88,7 @@ public class MoneyRecordControllerTest {
         MoneyRecordCreateRequest request = new MoneyRecordCreateRequest();
         request.setRecordDate(null);
         request.setAmount(null);
-        request.setCategory("");
+        request.setCategoryId(null);
  
         // POSTリクエストのテスト
         mockMvc.perform(post("/api/money-records")
@@ -99,7 +104,7 @@ public class MoneyRecordControllerTest {
        request.setId(1L);
        request.setRecordDate(LocalDate.of(2026, 6, 1));
        request.setAmount(2000);
-       request.setCategory("食費");
+       request.setCategoryId(1L);
        request.setMemo("夕食");
 
        mockMvc.perform(put("/api/money-records/1")

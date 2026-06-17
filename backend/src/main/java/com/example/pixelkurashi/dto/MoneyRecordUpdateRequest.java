@@ -18,8 +18,8 @@ public class MoneyRecordUpdateRequest {
     private Integer amount;
     
     // 更新するカテゴリ
-    @NotBlank
-    private String category;
+    @NotNull
+    private Long categoryId;
     
     // 更新するメモ
     private String memo;
@@ -48,12 +48,12 @@ public class MoneyRecordUpdateRequest {
         this.amount = amount;
     }
 
-    public String getCategory() {
-        return category;
+    public Long getCategoryId() {
+        return categoryId;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
     }
 
     public String getMemo() {
